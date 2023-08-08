@@ -36,14 +36,11 @@ Continuous Integration goals
     1. Setup Jenkins user and plugins
     2. Setup Nexus and repository for maven dependecies and Artifact
     3. Sonarqube login test
-4. **Git**
-    1. Creat github repo and migrate code
-    2. Integrate github repo with VSCode and test it
-5. **Build Job** create first job with Nexus integration (dependencies).
-6. **Github Webhook** - create build triggers on commit
-7. **Sonarqube server** integration - preform test.
-8. **Nexus Artifact** uploadtest results.
-9. **Slack** Notifications.
+4. **Build Job** create first job with Nexus integration (dependencies).
+5. **Github Webhook** - create build triggers on commit
+6. **Sonarqube server** integration - preform test.
+7. **Nexus Artifact** uploadtest results.
+8. **Slack** Notifications.
 
 ## Prerequisites:
 - AWS Account
@@ -132,12 +129,20 @@ Continuous Integration goals
             group previous repos
 3. Sonarqube login test through the browser (using PUBLIC IP)
 
-## **Git**
-1. Create github repo 
-2. Create ssh key with `ssh-keygen.exe`
-3. Enter public-key in github
-4. test: `ssh -T git@github.com`
-5. `git rmote set-url origin https://github.com/myacov/CI-Jenkins.git`
-6. 
-7. Integrate github repo with VSCode and test it
-
+## Preparing Jenkins
+* install openjdk-8-jdk on JenkinsServer instance
+1. manage jenkins tools
+    * Add JDK
+        * Name: `OracleJDK8`
+        * JAVA_HOME: `/usr/lib/jvm/java-1.8.0-openjdk-amd64`
+    * Add MAVEN
+        * Name: `MAVEN3`
+        * Version: `3.9.4`
+2. Save Nexus log in Credentials   Manage [Jenkins > Credentials > System > Global credentials > Add  credentials] 
+     * Kind: `Username with password`
+     * Scope: `Global`
+     * Username: `admin`
+     * Password: `$NexusPassword`
+     * ID: `nexuslogin`
+     
+## Build Job
