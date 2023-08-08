@@ -146,3 +146,13 @@ Continuous Integration goals
      * ID: `nexuslogin`
      
 ## Build Job
+### In Jenkins :
+New Item / Create a job
+- Name: vprofile-ci-pipline
+- type
+    - [ ] Freestyle project
+    - [x] Pipline
+
+- pipeline script from SCM
+    - SCM: Git
+    - Script Path: 
