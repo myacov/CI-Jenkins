@@ -130,7 +130,7 @@ Continuous Integration goals
 3. Sonarqube login test through the browser (using PUBLIC IP)
 
 ## Preparing Jenkins
-* install openjdk-8-jdk on JenkinsServer instance
+* apt update and then install openjdk-8-jdk on JenkinsServer instance
 1. manage jenkins tools
     * Add JDK
         * Name: `OracleJDK8`
@@ -138,14 +138,14 @@ Continuous Integration goals
     * Add MAVEN
         * Name: `MAVEN3`
         * Version: `3.9.4`
-2. Save Nexus log in Credentials   Manage [Jenkins > Credentials > System > Global credentials > Add  credentials] 
+2. Save Nexus log in Credentials   Manage [Jenkins > Credentials > System > Global credentials > Add credentials] 
      * Kind: `Username with password`
      * Scope: `Global`
      * Username: `admin`
      * Password: `$NexusPassword`
      * ID: `nexuslogin`
      
-## Build Job
+
 ### In Jenkins :
 New Item / Create a job
 - Name: vprofile-ci-pipline
@@ -155,4 +155,18 @@ New Item / Create a job
 
 - pipeline script from SCM
     - SCM: Git
-    - Script Path: 
+    - Repository URL: git@github.com:myacov/CI-Jenkins.git
+    - Add Jenkins Credential
+        - Kind: `SSH Username with private key`
+        - ID: githublogin
+        - Description: github login
+        - Username: git
+        - private key : Enter directly - paste private key from `cat ~/.ssh/id_rsa`
+    - Select credential: `git(githublogin)`
+
+    - in order to fix error we need to ssh into JenkinsServer and store the github identity
+    - swith to root user and then to jenkins user
+    - run `git ls-remore -h git@github.com:myacov/CI-Jenkins.git HEAD`
+    - identity will be stored at  `.ssh/known_hosts`
+
+    ## Build Job
