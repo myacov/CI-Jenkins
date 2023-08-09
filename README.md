@@ -219,3 +219,17 @@ Admin sign in > my account > Security
 ##### more info at: *https://plugins.jenkins.io/sonar/*
 
 ### Creating Sonar quality gates
+#### in SonarQube
+Quality Gates > Create >
+    Name: `vprofile QG`  
+    Add condition:
+        - [x] on overall code
+        - quality gate fails when: `bugs` are greater than `25`
+ attach quality gate:       
+`vprofile` project > Project settings > Quality Gate > 
+    Select: `vprofile QG`
+
+add webhook:
+`vprofile` project > Project settings > Webhooks > Create
+    Name: `jenkinswebhook`
+    URL: `http://<Jenkins private IP>:8080/sonarqube-webhook`
