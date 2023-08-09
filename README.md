@@ -148,7 +148,7 @@ Continuous Integration goals
 
 ### In Jenkins :
 New Item / Create a job
-- Name: vprofile-ci-pipline
+- Name: `vprofile-ci-pipline`
 - type
     - [ ] Freestyle project
     - [x] Pipline
@@ -170,3 +170,15 @@ New Item / Create a job
     - identity will be stored at  `.ssh/known_hosts`
 
     ## Build Job
+    ### In Jenkins :
+        Build Now
+
+    ## Github Webhook - create build triggers on commit
+    ### Create webhook in repository
+    repo settings > Webhooks > Add Webhook
+        Payload URL: `http://<JenkinsServer IP>/github-webhook/`
+        Content type: `application/json`
+        trigger: `push event`
+    ### Back in Jenkins
+    `vprofile-ci-pipline` > Configure > Build Triggers
+    - GitHub hook trigger for GITScm polling
