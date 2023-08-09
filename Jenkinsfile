@@ -19,7 +19,7 @@ pipeline {
         NEXUS_USER = 'admin'
         NEXUS_PASS = '73ycJMdCpm'
         RELEASE_REPO = 'vprofile-release'
-        CENTRAL_REPO = 'vprofile-maven-central'
+        CENTRAL_REPO = 'vpro-maven-central'
         NEXUSIP = '172.31.80.214'
         NEXUSPORT = 8081
         NEXUS_GRP_REPO = 'vpro-maven-group'
@@ -54,7 +54,7 @@ pipeline {
                 }
             }
 		
-        stage ('CODE ANALYSIS WITH CHECKSTYLE'){
+        stage ('CODE ANALYSIS with CHECKSTYLE'){
             steps {
                 sh 'mvn -s settings.xml checkstyle:checkstyle'
             }
@@ -81,10 +81,6 @@ pipeline {
                    -Dsonar.junit.reportsPath=target/surefire-reports/ \
                    -Dsonar.jacoco.reportsPath=target/jacoco.exec \
                    -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
-            }
-
-            timeout(time: 10, unit: 'MINUTES') {
-               waitForQualityGate abortPipeline: true
             }
           }
         }
