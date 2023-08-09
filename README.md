@@ -39,7 +39,7 @@ Continuous Integration goals
 4. **Build Job** create first job with Nexus integration (dependencies).
 5. **Github Webhook** - create build triggers on commit
 6. **Sonarqube server** integration - preform test.
-7. **Nexus Artifact** uploadtest results.
+7. **Nexus Artifact** upload artifact.
 8. **Slack** Notifications.
 
 ## Prerequisites:
@@ -189,7 +189,7 @@ New Item / Create a job
         Add SonarQube Scanner
             Name: `sonarscanner`
             Version: `SonarQube Sacnner 4.7.0.2747`
-    manage jenkins > Systen 
+    manage jenkins > System
         Add SonarQube servers
             - [x] Environment Variables
             - Name: `sonarserver`
@@ -233,3 +233,10 @@ add webhook:
 `vprofile` project > Project settings > Webhooks > Create
     Name: `jenkinswebhook`
     URL: `http://<Jenkins private IP>:8080/sonarqube-webhook`
+
+
+
+## Nexus Artifact - upload artifact to Nexus repository
+### Back in Jenkins
+manage jenkins > System > Build Timestamp
+Pattern: `yy-MM-dd_HH:mm`
