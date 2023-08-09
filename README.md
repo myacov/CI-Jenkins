@@ -1,136 +1,148 @@
 # CI-Jenkins
-Continuous Integration with Jenkins Nexus Sonarqube and Slack
+## CI Pipeline with Jenkins, Nexus, Sonarqube and Slack
 
-## Objective: 
-Continuous Integration goals
-* ⚡️ Fault isolation - quickly identify and isolate the root cause of a failures or bugs
-* ⏱️ Short MTTR (Mean Time To Repair) - shorten feedback loops and test cycles
-* ⏩ Fast integration to feature changes 
-* ✅ Less disruptive releases - target issue resolution earlier in the development process.
+The CI pipeline aims to: 
+
+* Quickly identify and resolve issues
+* Shorten feedback and test cycles
+* Integrate changes quickly and with less disruption
+
+We achieve this by:
+* Frequent code testing
+* Early bug detection and fix
+* Releasing integrated, tested code
 
 ## Architecture:
-![Project diagram](./images/proj4.jpg)
+![Project diagram](./Images/proj4b.jpg)
 
-## AWS Services
+## Tools and Services Used
 | Tools | USE | 
 | ------------- | ------------- | 
-|🖥️ AWS EC2 Instances  | for Jenkins, SonarQube, Nexus Servers |
-|🤖 Jenkins | Continuous Integration Server|
-|🐙 git & GitHub | version control and repository |
-|🔍 Checkstyle | Code Analysis | 
-|🔍 Sonarscanner | Code Analysis | 
+|🖥️ AWS EC2 | Host Jenkins, Nexus and SonarQube |
+|🤖 Jenkins | Continous Integration tool |
+| GitHub | Version control |
+|🔍 Checkstyle | Code analysis plugin for Jenkins | 
+|🔍 Sonarscanner | Analyzes projects and uploads results to SonarQube | 
 |📊 SonarQube Server | Code Analysis Server | 
 |🛠 Maven | Build tool  | 
-|📦 Nexus Sonartype | Artifact Repostory |
-|🔔 Slack | Colaboration tool - Notifications |
+|📦 Nexus Sonartype | Maven repository manager |
+|🔔 Slack | Notification integration |
 
 
-## Desired Learning outcomes
+## Learning Objectives
 - Gain familiarity with various AWS services.
-- Understand and implement autoscaling for optimal performance.
+- Understand and implement a working CI pipeline
 
-## Flow of Execution
-1. **Create 3 Security Groups** for Jenkins, Nexus, and Sonarqube.
-2. **Launch EC2 Instances** with user data.
-3. **Post Installation** 
-    1. Setup Jenkins user and plugins
-    2. Setup Nexus and repository for maven dependecies and Artifact
-    3. Sonarqube login test
-4. **Build Job** create first job with Nexus integration (dependencies).
-5. **Github Webhook** - create build triggers on commit
-6. **Sonarqube server** integration - preform test.
-7. **Nexus Artifact** upload artifact.
-8. **Slack** Notifications.
+## Implementation
+1. **Security Groups Setup** for Jenkins, Nexus, and Sonarqube. Configure inbound rules for necessary communication
+2. **Launch EC2 Instances** - Utilize user data scripts for initial setup.
+3. **Post Installation Configuration** 
+    * Set up Jenkins user and install essential plugins.
+    * Configure Nexus and establish repositories for Maven dependencies and artifacts.
+    * Test SonarQube login through the browser.
+4. **Jenkins Setup** 
+    * Install required tools such as OpenJDK 8 and Maven.
+    * Set up Jenkins tools for JDK and Maven.
+    * Save Nexus login credentials.
+5. **Jenkins Job Creation** 
+    * Create a Jenkins job for the CI pipeline using the provided Git repository.
+    * Configure the GitHub webhook to trigger builds on commits.
+6. **SonarQube Integration** 
+    * Integrate **SonarQube** into the CI pipeline to perform code analysis.
+    * Configure SonarQube server authentication in Jenkins.
+7. **Create quality gates in SonarQube**
+8. **Nexus Artifact Management** upload artifact to Nexus repositories.
+9. **Slack Notifications** - Integrate Slack for notification purposes, ensuring authentication and appropriate channels.
 
 ## Prerequisites:
-- AWS Account
+- active AWS account
+
+## Detailed Steps
+### 1.  Security Groups Setup
+#### A. Jenkins Security group (**jenkins-SG**):
+
+Inbound rules:
+- HTTP (Port 8080) from any IPv4 (github-Jenkins connection)
+- HTTP (Port 8080) from any IPv6 (github-Jenkins connection)
+- SSH (Port 22) from **MY IP**
+    Description: Allow SSH
+- Custom TCP (Port 8080) from **sonar-SG**
+    Description: Allow sonar to send report back to jenkins
+#### B. Nexus Security group (**nexus-SG**): 
+Inbound rules:
+- SSH (Port 22) from **MY IP**
+        Description: Allow SSH
+- Custom (Port 8081) from **MY IP**
+        Description: Allow our access from the browser
+- Custom (Port 8081) from **jenkins-SG**
+        Description: Allow access from Jenkins (for artifact upload)
+#### C. Sonarqube Security group (**sonar-SG**):
+Inbound rules:
+- SSH (Port 22) from **MY IP**
+        Description: Allow SSH
+- Custom TCP (Port 80) from **MY IP**
+    Description: for nexus service
+- Custom TCP (Port 80) from **jenkins-SG**
+    Description: Allow jenkins to upload test result
 
 
-## Create Security Groups
-1. Jenkins Security group (**jenkins-SG**):
-    Description: Security group for Jenkins server
-    - Inbound rules:
-        - HTTP (Port 8080) from any IPv4 (github-Jenkins connection)
-        - HTTP (Port 8080) from any IPv6 (github-Jenkins connection)
-        - SSH (Port 22) from **MY IP**
-            Description: Allow SSH
-        - Custom TCP (Port 8080) from **sonar-SG**
-            Description: Allow sonar to send report back to jenkins
-2. Nexus Security group (**nexus-SG**):
-    Description: Security group for Nexus 
-    - Inbound rules:
-        - SSH (Port 22) from **MY IP**
-                Description: Allow SSH
-        - Custom (Port 8081) from **MY IP**
-                Description: Allow our access from the browser
-        - Custom (Port 8081) from **jenkins-SG**
-                Description: Allow access from Jenkins (for artifact upload)
-3. Sonarqube Security group (**sonar-SG**):
-    Description: Security group for backend services 
-      - Inbound rules:
-        - SSH (Port 22) from **MY IP**
-                Description: Allow SSH
-        - Custom TCP (Port 80) from **MY IP**
-            Description: for nexus service
-        - Custom TCP (Port 80) from **jenkins-SG**
-            Description: Allow jenkins to upload test result
+### 2. Launch EC2 Instances (with userdata)
+#### A. JenkinsServer Instance
+- Name: **`JenkinsServer`**
+- Project: `Jenkins CI`
+- AMI: `Ubuntu Server 20.04 LTS`
+- type: `t2.small`
+- Key pair: `jenkins-key`
+- Network settings: Security group: **jenkins-SG**
+- Advanced details: User data : use contents of `./userdata/jenkins-setup.sh`
 
+#### B. NexusServer Instance
+- Name: **`NexusServer`**
+- Project: `Jenkins CI`
+- AMI: `Amazon Linux 2`
+- type: `t2.medium`
+- Key pair: `nexus-key`
+- Network settings: Security group: **nexus-SG**
+- Advanced details: User data : use contents of `./userdata/nexus-setup.sh`
 
-## Launch EC2 Instances (with userdata)
-1. JenkinsServer Instance
-    - Name: **`JenkinsServer`**
-    - Project: `Jenkins CI`
-    - AMI: `Ubuntu Server 20.04 LTS`
-    - type: `t2.small`
-    - Key pair: `jenkins-key`
-    - Network settings: Security group: **jenkins-SG**
-    - Advanced details: User data : Paste contents of jenkins-setup.sh
-2. NexusServer Instance
-    - Name: **`NexusServer`**
-    - Project: `Jenkins CI`
-    - AMI: `Amazon Linux 2`
-    - type: `t2.medium`
-    - Key pair: `nexus-key`
-    - Network settings: Security group: **nexus-SG**
-    - Advanced details: User data : Paste contents of nexus-setup.sh
-3. SonarServer Instance
-    - Name: **`SonarServer`**
-    - Project: `Jenkins CI`
-    - AMI: `Ubuntu Server 20.04 LTS`
-    - type: `t2.medium`
-    - Key pair: `sonar-key`
-    - Network settings: Security group: **sonar-SG**
-    - Advanced details: User data : Paste contents of sonar-setup.sh
+#### C. SonarServer Instance
+- Name: **`SonarServer`**
+- Project: `Jenkins CI`
+- AMI: `Ubuntu Server 20.04 LTS`
+- type: `t2.medium`
+- Key pair: `sonar-key`
+- Network settings: Security group: **sonar-SG**
+- Advanced details: User data : use contents of `./userdata/sonar-setup.sh`
 
-## Post Installation 
+### 3. Post Installation 
 1. Setup Jenkins user and install plugins:
-    1. Maven Integration
-    2. githun Integration
-    3. Nexus Artifact Uploader
-    4. SonarQube Scanner
-    5. Slack Notification
-    6. Build Timestamp
+    * `Maven Integration`
+    * `Github Integration`
+    * `Nexus Artifact Uploader`
+    * `SonarQube Scanner`
+    * `Slack Notification`
+    * `Build Timestamp`
 
-2. Setup Nexus and repository for maven dependecies and Artifact:
-    1. sign in with initial password
-    2. choose new password
-    3. Disable anonymous access
-    4. Create 4 repositories
-        1. Maven2 (hosted)
+2. Configure Nexus with repositories for Maven dependencies and artifacts:
+    1. sign in with initial password and choose new password
+    2. Disable anonymous access
+    3. Create 4 repositories:
+        - Maven2 (hosted)
             name: **`vprofile-release`**
-        2. Maven2 (proxy)
+        - Maven2 (proxy)
             name: **`vpro-maven-central`**
             remote storage: `https://repo1.maven.org/maven2/`
-        3. Maven2 (hosted)
+        - Maven2 (hosted)
             name: **`vpro-snapshot`**
             version policy: `snapshot`
-        4. Maven2 (group)
+        - Maven2 (group)
             name: **`vpro-maven-group`**
             group previous repos
-3. Sonarqube login test through the browser (using PUBLIC IP)
+3. Test SonarQube login to verify successful installation through the browser (using PUBLIC IP)
 
-## Preparing Jenkins
-* apt update and then install openjdk-8-jdk on JenkinsServer instance
+### 4. Jenkins Setup
+* Update and then install openjdk-8-jdk on `JenkinsServer` instance
+* in Jenkins:
 1. manage jenkins tools
     * Add JDK
         * Name: `OracleJDK8`
@@ -145,103 +157,98 @@ Continuous Integration goals
      * Password: `$NexusPassword`
      * ID: `nexuslogin`
      
-
-### In Jenkins :
+### 5. Jenkins Job Creation :
+#### Create a Jenkins job
 New Item / Create a job
 - Name: `vprofile-ci-pipline`
-- type
-    - [ ] Freestyle project
+- type:
     - [x] Pipline
-
-- pipeline script from SCM
+    - [x] pipeline script from SCM
     - SCM: Git
-    - Repository URL: git@github.com:myacov/CI-Jenkins.git
+    - Repository URL: `git@github.com:myacov/CI-Jenkins.git`
     - Add Jenkins Credential
         - Kind: `SSH Username with private key`
-        - ID: githublogin
+        - ID: `githublogin`
         - Description: github login
-        - Username: git
+        - Username: `git`
         - private key : Enter directly - paste private key from `cat ~/.ssh/id_rsa`
     - Select credential: `git(githublogin)`
 
-    - in order to fix error we need to ssh into JenkinsServer and store the github identity
-    - swith to root user and then to jenkins user
-    - run `git ls-remore -h git@github.com:myacov/CI-Jenkins.git HEAD`
+    - in order to fix error we need to ssh into JenkinsServer and store the github identity. switch to root user and then to jenkins user and run: `git ls-remote -h git@github.com:myacov/CI-Jenkins.git HEAD`
     - identity will be stored at  `.ssh/known_hosts`
 
-    ## Build Job
-    ### In Jenkins :
-        Build Now
+#### GitHub Webhook - Creating Build Triggers
+##### **in GitHub:**
+- Create webhook in GitHub: [repo settings > Webhooks > Add Webhook]
+    
+    - Payload URL: `http://<JenkinsServer IP>/github-webhook/`
+    - Content type: `application/json`
+    - trigger: `push event`
+##### **in Jenkins:**
+``` 
+[`vprofile-ci-pipline` JOB > Configure > Build Triggers]
+```
+choose:
+- [x] GitHub hook trigger for GITScm polling
 
-    ## Github Webhook - create build triggers on commit
-    ### Create webhook in repository
-    repo settings > Webhooks > Add Webhook
-        Payload URL: `http://<JenkinsServer IP>/github-webhook/`
-        Content type: `application/json`
-        trigger: `push event`
-    ### Back in Jenkins
-    `vprofile-ci-pipline` > Configure > Build Triggers
-    - GitHub hook trigger for GITScm polling
+### 6. SonarQube Scanner Integration
+we need jenkins to authenticate SonarQube server, we generate a token:
 
-## Sonarqube server integration - preform test
-### Back in Jenkins
-    manage jenkins > Tools 
-        Add SonarQube Scanner
-            Name: `sonarscanner`
-            Version: `SonarQube Sacnner 4.7.0.2747`
-    manage jenkins > System
-        Add SonarQube servers
-            - [x] Environment Variables
-            - Name: `sonarserver`
-            - Server URL: `http://<SonarServer Private IP>/`
-            - Server authentication token
-### in SonarQube
-#### we need jenkins to authenticate SonarQube server
-Admin sign in > my account > Security 
-    Generate a token
-        Name: `jenkins`
-        Add SonarQube Scanner
-            Name: `sonarscanner`
-        Get `TOKEN`
-### Back in Jenkins (SonarQube Scanner section)
-- Add Jenkins Credential
+##### **in SonarQube Dashboard:**
+```
+[Admin > my account > Security > Generate a token > Name: jenkins] 
+```
+- Get `TOKEN`
+
+##### **in Jenkins:**
+```
+[manage jenkins > Tools > SonarQube Scanner] 
+```
+- Add SonarQube Scanner
+    - Name: `sonarscanner`
+    - Version: `SonarQube Sacnner 4.7.0.2747`
+
+```
+[manage jenkins > System > SonarQube servers] 
+```
+manage jenkins > System
+- Add SonarQube servers
+    - [x] Environment Variables
+    - Name: `sonarserver`
+    - Server URL: `http://<SonarServer Private IP>/`
+    - Server authentication token: + Add 
+    - Add Jenkins Credential
         - Kind: `Secret text`
-        - Secret: `TOKEN`
+        - Secret: enter the `TOKEN`
         - Name: `sonartoken`
         - Description: `sonartoken`
-- Select `sonartoken`
+    - Select `sonartoken`
 
-#### writing code for uploading reports to SonarQube Scanner
-```
 
-```
-
-##### more info at: *https://plugins.jenkins.io/sonar/*
-
-### Creating Sonar quality gates
-#### in SonarQube
+### 7. Creating SonarQube quality gates
+#### in SonarQube:
+##### create Quality gate:
 Quality Gates > Create >
-    Name: `vprofile QG`  
-    Add condition:
-        - [x] on overall code
-        - quality gate fails when: `bugs` are greater than `25`
- attach quality gate:       
-`vprofile` project > Project settings > Quality Gate > 
-    Select: `vprofile QG`
+- Name: `vprofile QG`  
+- Add condition:
+    - [x] on overall code
+    - quality gate fails when: `bugs` are greater than `25`
+- Attach quality gate:       
+    - project > Project settings > Quality Gate > Select: `vprofile QG`
 
-add webhook:
-`vprofile` project > Project settings > Webhooks > Create
-    Name: `jenkinswebhook`
-    URL: `http://<Jenkins private IP>:8080/sonarqube-webhook`
-
+##### add webhook:
+project > Project settings > Webhooks > Create >
+- Name: `jenkinswebhook`
+- URL: `http://<Jenkins_private_IP>:8080/sonarqube-webhook`
 
 
-## Nexus Artifact - upload artifact to Nexus repository
-### Back in Jenkins
+
+##### Nexus Artifact - upload artifact to Nexus repository:
+- in Jenkins:
 manage jenkins > System > Build Timestamp
 Pattern: `yy-MM-dd_HH:mm`
 
-### code for uploading artifact to nexus
+### 8. Nexus Artifact Management
 #### Documentation: `https://github.com/jenkinsci/nexus-artifact-uploader-plugin` (Jenkins pipeline example)
 #### Here we will add a stage:
 
@@ -263,14 +270,14 @@ Pattern: `yy-MM-dd_HH:mm`
     )
 ```
 
-##  Slack Notifications
-### we need jenkins to authenticate Slack server
-Add Slack app: `Jenkins CI`
-Admin sign in > my account > Security 
-    Choose channel: `jenkinscicd`
-        Add Jenkins CI integration
-        Get `TOKEN` created (from step 3)
-### Back in Jenkins - enter token
+### 9. Slack Notifications
+#### we need jenkins to authenticate Slack server
+- Add Slack app: `Jenkins CI`
+- Admin sign in > my account > Security 
+    - Choose channel: `jenkinscicd`
+    - Add Jenkins CI integration
+    - Get `TOKEN` created (from step 3)
+#### Back in Jenkins - enter token
     manage jenkins > System 
        Slack:
             Workspace: `vprofilecicd`
