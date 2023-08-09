@@ -278,13 +278,13 @@ Pattern: `yy-MM-dd_HH:mm`
     - Add Jenkins CI integration
     - Get `TOKEN` created (from step 3)
 #### Back in Jenkins - enter token
-    manage jenkins > System 
-       Slack:
-            Workspace: `vprofilecicd`
-            - Add Jenkins Credential
-            - Kind: `Secret text`
-            - Secret: `TOKEN`
-            - Name: `slacktoken`
-            - Description: `slacktoken`
+manage jenkins > System 
+    Slack:
+        Workspace: `vprofilecicd`
+        - Add Jenkins Credential
+        - Kind: `Secret text`
+        - Secret: `TOKEN`
+        - Name: `slacktoken`
+        - Description: `slacktoken`
 - Select `slacktoken`
 - Default channel: `#jenkinscicd`
