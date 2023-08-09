@@ -218,3 +218,4 @@ Admin sign in > my account > Security
 
 ##### more info at: *https://plugins.jenkins.io/sonar/*
 
+### Creating Sonar quality gates
