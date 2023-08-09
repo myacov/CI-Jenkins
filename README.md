@@ -22,7 +22,7 @@ Continuous Integration goals
 |📊 SonarQube Server | Code Analysis Server | 
 |🛠 Maven | Build tool  | 
 |📦 Nexus Sonartype | Artifact Repostory |
-|🔔 Slack | Notifications |
+|🔔 Slack | Colaboration tool - Notifications |
 
 
 ## Desired Learning outcomes
@@ -240,3 +240,44 @@ add webhook:
 ### Back in Jenkins
 manage jenkins > System > Build Timestamp
 Pattern: `yy-MM-dd_HH:mm`
+
+### code for uploading artifact to nexus
+#### Documentation: `https://github.com/jenkinsci/nexus-artifact-uploader-plugin` (Jenkins pipeline example)
+#### Here we will add a stage:
+
+ ```groovy
+    nexusArtifactUploader(
+        nexusVersion: 'nexus3',
+        protocol: 'http',
+        nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
+        groupId: 'QA',
+        version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+        repository: "${RELEASE_REPO}",
+        credentialsId: "${NEXUS_LOGIN}",
+        artifacts: [
+            [artifactId: 'vproapp',
+                classifier: '',
+                file: 'target/vprofile-v2.war',
+                type: 'war']
+            ]
+    )
+```
+
+##  Slack Notifications
+### we need jenkins to authenticate Slack server
+Add Slack app: `Jenkins CI`
+Admin sign in > my account > Security 
+    Choose channel: `jenkinscicd`
+        Add Jenkins CI integration
+        Get `TOKEN` created (from step 3)
+### Back in Jenkins - enter token
+    manage jenkins > System 
+       Slack:
+            Workspace: `vprofilecicd`
+            - Add Jenkins Credential
+            - Kind: `Secret text`
+            - Secret: `TOKEN`
+            - Name: `slacktoken`
+            - Description: `slacktoken`
+- Select `slacktoken`
+- Default channel: `#jenkinscicd`
