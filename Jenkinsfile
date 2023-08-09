@@ -8,20 +8,13 @@ pipeline {
     }
 	
     environment {
-        // NEXUS_VERSION = "nexus3"
-        // NEXUS_PROTOCOL = "http"
-        // NEXUS_URL = "172.31.80.214:8081"
-        // NEXUS_REPOSITORY = "vprofile-release"
-	    // NEXUS_REPOGRP_ID    = "vprofile-grp-repo"
-        // NEXUS_CREDENTIAL_ID = "nexuslogin"
-        // ARTVERSION = "${env.BUILD_ID}"
         SNAP_REPO = 'vpro-snapshot'
         NEXUS_USER = 'admin'
         NEXUS_PASS = '73ycJMdCpm'
         RELEASE_REPO = 'vprofile-release'
         CENTRAL_REPO = 'vpro-maven-central'
         NEXUSIP = '172.31.80.214'
-        NEXUSPORT = 8081
+        NEXUSPORT = '8081'
         NEXUS_GRP_REPO = 'vpro-maven-group'
         NEXUS_LOGIN = 'nexuslogin'
         SONARSERVER = 'sonarserver'
@@ -44,7 +37,7 @@ pipeline {
 
         stage('UNIT TEST'){
                 steps {
-                    sh 'mvn test'
+                    sh 'mvn -s settings.xml test'
                 }
             }
 
