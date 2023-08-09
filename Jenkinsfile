@@ -24,6 +24,8 @@ pipeline {
         NEXUSPORT = 8081
         NEXUS_GRP_REPO = 'vpro-maven-group'
         NEXUS_LOGIN = 'nexuslogin'
+        SONARSERVER = 'sonarserver'
+        SONARSCANNER = 'sonarscanner'
     }
 	
     stages{
@@ -40,17 +42,17 @@ pipeline {
             }
         }
 
-	stage('UNIT TEST'){
-            steps {
-                sh 'mvn test'
+        stage('UNIT TEST'){
+                steps {
+                    sh 'mvn test'
+                }
             }
-        }
 
-	stage('INTEGRATION TEST'){
-            steps {
-                sh 'mvn -s settings.xml verify -DskipUnitTests'
+        stage('INTEGRATION TEST'){
+                steps {
+                    sh 'mvn -s settings.xml verify -DskipUnitTests'
+                }
             }
-        }
 		
         stage ('CODE ANALYSIS WITH CHECKSTYLE'){
             steps {
@@ -62,17 +64,17 @@ pipeline {
                 }
             }
         }
-/*
+
         stage('CODE ANALYSIS with SONARQUBE') {
           
-		  environment {
-             scannerHome = tool 'sonarscanner4'
+		    environment {
+                scannerHome = tool "${SONARSCANNER}"
           }
 
           steps {
-            withSonarQubeEnv('sonar-pro') {
+            withSonarQubeEnv("${SONARSERVER}") {
                sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=vprofile \
-                   -Dsonar.projectName=vprofile-repo \
+                   -Dsonar.projectName=vprofile \
                    -Dsonar.projectVersion=1.0 \
                    -Dsonar.sources=src/ \
                    -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
@@ -86,7 +88,7 @@ pipeline {
             }
           }
         }
-
+/*
         stage("Publish to Nexus Repository Manager") {
             steps {
                 script {

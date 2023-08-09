@@ -182,3 +182,39 @@ New Item / Create a job
     ### Back in Jenkins
     `vprofile-ci-pipline` > Configure > Build Triggers
     - GitHub hook trigger for GITScm polling
+
+## Sonarqube server integration - preform test
+### Back in Jenkins
+    manage jenkins > Tools 
+        Add SonarQube Scanner
+            Name: `sonarscanner`
+            Version: `SonarQube Sacnner 4.7.0.2747`
+    manage jenkins > Systen 
+        Add SonarQube servers
+            - [x] Environment Variables
+            - Name: `sonarserver`
+            - Server URL: `http://<SonarServer Private IP>/`
+            - Server authentication token
+### in SonarQube
+#### we need jenkins to authenticate SonarQube server
+Admin sign in > my account > Security 
+    Generate a token
+        Name: `jenkins`
+        Add SonarQube Scanner
+            Name: `sonarscanner`
+        Get `TOKEN`
+### Back in Jenkins (SonarQube Scanner section)
+- Add Jenkins Credential
+        - Kind: `Secret text`
+        - Secret: `TOKEN`
+        - Name: `sonartoken`
+        - Description: `sonartoken`
+- Select `sonartoken`
+
+#### writing code for uploading reports to SonarQube Scanner
+```
+
+```
+
+##### more info at: *https://plugins.jenkins.io/sonar/*
+
