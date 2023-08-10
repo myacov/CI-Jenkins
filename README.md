@@ -185,9 +185,9 @@ New Item / Create a job
     - Content type: `application/json`
     - trigger: `push event`
 ##### **in Jenkins:**
-``` 
+
 [`vprofile-ci-pipline` JOB > Configure > Build Triggers]
-```
+
 choose:
 - [x] GitHub hook trigger for GITScm polling
 
@@ -195,23 +195,20 @@ choose:
 we need jenkins to authenticate SonarQube server, we generate a token:
 
 ##### **in SonarQube Dashboard:**
-```
-[Admin > my account > Security > Generate a token > Name: jenkins] 
-```
+[ Admin > my account > Security > Generate a token ]
+- Name: jenkins
+
 - Get `TOKEN`
 
 ##### **in Jenkins:**
-```
-[manage jenkins > Tools > SonarQube Scanner] 
-```
+[ manage jenkins > Tools > SonarQube Scanner ] 
+
 - Add SonarQube Scanner
     - Name: `sonarscanner`
     - Version: `SonarQube Sacnner 4.7.0.2747`
 
-```
-[manage jenkins > System > SonarQube servers] 
-```
-manage jenkins > System
+
+[ manage jenkins > System > SonarQube servers ] 
 - Add SonarQube servers
     - [x] Environment Variables
     - Name: `sonarserver`
@@ -278,13 +275,14 @@ Pattern: `yy-MM-dd_HH:mm`
     - Add Jenkins CI integration
     - Get `TOKEN` created (from step 3)
 #### Back in Jenkins - enter token
-manage jenkins > System 
-    Slack:
-        Workspace: `vprofilecicd`
-        - Add Jenkins Credential
-        - Kind: `Secret text`
-        - Secret: `TOKEN`
-        - Name: `slacktoken`
-        - Description: `slacktoken`
+[ manage jenkins > System ]
+
+**Slack:**
+- Workspace: `vprofilecicd`
+- Add Jenkins Credential
+    - Kind: `Secret text`
+    - Secret: `TOKEN`
+    - Name: `slacktoken`
+    - Description: `slacktoken`
 - Select `slacktoken`
 - Default channel: `#jenkinscicd`
