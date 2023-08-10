@@ -40,11 +40,7 @@ We achieve this by:
 - Launch instances for Jenkins, Nexus, and SonarQube using user data scripts.
 3. **Post Installation Configuration** 
     * Setup Jenkins user and install essential plugins.
-<<<<<<< HEAD
     * Configure Nexus repositories for artifacts, Maven dependencies and snapshots.
-=======
-    * Configure Nexus and Create repositories for artifacts, Maven dependencies, and snapshots.
->>>>>>> 60fbd61893028544e589fe9d64a4fc5a2925d9f8
     * Test SonarQube login through the browser using the public IP.
 4. **Jenkins Setup** 
     * Install required tools like OpenJDK 8 and Maven.
