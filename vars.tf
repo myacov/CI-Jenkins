@@ -23,10 +23,23 @@ variable "USERNAME" {
 }
 
 variable "MYIP" {
-  default = "31.187.78.213/32"
+  default = "31.187.78.14/32"
 
 }
 
 variable "instance_count" {
   default = "1"
+}
+
+variable "vpc_cidr_block" {
+}
+
+variable "subnet_cidr_block" {
+}
+
+variable "avail_zone" {
+}
+
+variable "env_prefix" {
+  
 }
