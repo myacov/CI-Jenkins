@@ -1,3 +1,10 @@
 target/
-
+# local terraform directory
 .terraform/
+
+# tf state files
+*.tfstate
+*.tfstate.*
+
+# tf vars files
+*.tfvars
