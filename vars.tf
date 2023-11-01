@@ -41,5 +41,5 @@ variable "avail_zone" {
 }
 
 variable "env_prefix" {
-  
+
 }
