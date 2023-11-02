@@ -10,36 +10,28 @@ variable "AMIS" {
   }
 }
 
-variable "PRIV_KEY_PATH" {
-  default = "ci-vprofile-key"
-}
+variable "PRIV_KEY_PATH" {}
 
-variable "PUB_KEY_PATH" {
-  default = "ci-vprofile-key.pub"
-}
+variable "PUB_KEY_PATH" {}
 
 variable "USERNAME" {
   default = "ubuntu"
 }
 
-variable "MYIP" {
-  default = "31.187.78.14/32"
-
-}
+variable "my_ip" {}
 
 variable "instance_count" {
   default = "1"
 }
 
-variable "vpc_cidr_block" {
-}
+variable "vpc_cidr_block" {}
 
-variable "subnet_cidr_block" {
-}
+variable "subnet_cidr_block" {}
 
-variable "avail_zone" {
-}
+variable "avail_zone" {}
 
-variable "env_prefix" {
+variable "env_prefix" {}
 
-}
+variable "instance_type" {}
+
+variable "jenkins_script_path" {}

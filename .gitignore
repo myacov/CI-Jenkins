@@ -8,3 +8,5 @@ target/
 
 # tf vars files
 *.tfvars
+
+*key*
