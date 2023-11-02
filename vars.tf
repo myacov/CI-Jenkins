@@ -32,6 +32,5 @@ variable "avail_zone" {}
 
 variable "env_prefix" {}
 
-variable "instance_type" {}
 
-variable "jenkins_script_path" {}
+
