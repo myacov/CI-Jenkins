@@ -9,4 +9,5 @@ target/
 # tf vars files
 *.tfvars
 
-*key*
+#keys
+.ssh/
