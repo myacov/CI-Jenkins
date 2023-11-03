@@ -1,4 +1,6 @@
 target/
+# vscode environment
+.vscode/
 # local terraform directory
 .terraform/
 
