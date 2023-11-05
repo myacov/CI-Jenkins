@@ -32,12 +32,11 @@ We achieve this by:
 ## Learning Objectives
 - Gain familiarity with various AWS services.
 - Understand and implement a working CI pipeline
+- Understanding terraform infrastructure
 
 ## Implementation
-1. **Security Groups Setup** 
-- Configure inbound rules for necessary communication for Jenkins, Nexus, and Sonarqube.
+1. **build infrastructure with terraform** 
 2. **Launch EC2 Instances** 
-- Launch instances for Jenkins, Nexus, and SonarQube using user data scripts.
 3. **Post Installation Configuration** 
     * Setup Jenkins user and install essential plugins.
     * Configure Nexus repositories for artifacts, Maven dependencies and snapshots.
@@ -63,60 +62,7 @@ We achieve this by:
 
 ## Detailed Steps
 ### 1.  Security Groups Setup
-#### A. Jenkins Security group (**jenkins-SG**):
 
-Inbound rules:
-- HTTP (Port 8080) from any IPv4 (github-Jenkins connection)
-- HTTP (Port 8080) from any IPv6 (github-Jenkins connection)
-- SSH (Port 22) from **MY IP**
-    Description: Allow SSH
-- Custom TCP (Port 8080) from **sonar-SG**
-    Description: Allow sonar to send report back to jenkins
-#### B. Nexus Security group (**nexus-SG**): 
-Inbound rules:
-- SSH (Port 22) from **MY IP**
-        Description: Allow SSH
-- Custom (Port 8081) from **MY IP**
-        Description: Allow our access from the browser
-- Custom (Port 8081) from **jenkins-SG**
-        Description: Allow access from Jenkins (for artifact upload)
-#### C. Sonarqube Security group (**sonar-SG**):
-Inbound rules:
-- SSH (Port 22) from **MY IP**
-        Description: Allow SSH
-- Custom TCP (Port 80) from **MY IP**
-    Description: for nexus service
-- Custom TCP (Port 80) from **jenkins-SG**
-    Description: Allow jenkins to upload test result
-
-
-### 2. Launch EC2 Instances (with scripts in userdata folder)
-#### A. JenkinsServer Instance
-- Name: **`JenkinsServer`**
-- Project: `Jenkins CI`
-- AMI: `Ubuntu Server 20.04 LTS`
-- type: `t2.small`
-- Key pair: `jenkins-key`
-- Network settings: Security group: **jenkins-SG**
-- Advanced details: User data : use contents of `./userdata/jenkins-setup.sh`
-
-#### B. NexusServer Instance
-- Name: **`NexusServer`**
-- Project: `Jenkins CI`
-- AMI: `Amazon Linux 2`
-- type: `t2.medium`
-- Key pair: `nexus-key`
-- Network settings: Security group: **nexus-SG**
-- Advanced details: User data : use contents of `./userdata/nexus-setup.sh`
-
-#### C. SonarServer Instance
-- Name: **`SonarServer`**
-- Project: `Jenkins CI`
-- AMI: `Ubuntu Server 20.04 LTS`
-- type: `t2.medium`
-- Key pair: `sonar-key`
-- Network settings: Security group: **sonar-SG**
-- Advanced details: User data : use contents of `./userdata/sonar-setup.sh`
 
 ### 3. Post Installation 
 1. Setup Jenkins user and install plugins:
@@ -152,7 +98,7 @@ Inbound rules:
  
 - SSH into the `JenkinsServer` instance using the `jenkins-key` key pair
 - Update the system and install OpenJDK 8 and Maven:
-```sql
+```bash
 sudo apt update
 sudo apt install openjdk-8-jdk maven
 ```
@@ -160,7 +106,8 @@ sudo apt install openjdk-8-jdk maven
 - Set up Jenkins tools for JDK and Maven.
 ##### In Jenkins, go to "manage jenkins" > "Tools"
 - Add a new JDK tool named `OracleJDK8` with the path `/usr/lib/jvm/java-1.8.0-openjdk-amd64`.
-- Add a new Maven tool named `MAVEN3` with version` 3.9.4`.
+- Add a new JDK tool named `OracleJDK11` with the path `/usr/lib/jvm/java-1.8.0-openjdk-amd64`.
+- Add a new Maven tool named `MAVEN3` with version `3.9.5`.
 
 - Save Nexus Login Credentials:
 
@@ -169,6 +116,7 @@ sudo apt install openjdk-8-jdk maven
     - Username: `admin`
     -   Password: Enter `<NexusPassword>`
     - ID: `nexuslogin`
+    - Description: `nexuslogin`
      
 ### 5. Jenkins Job Creation :
 #### 1. Create a Jenkins job
