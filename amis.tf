@@ -19,7 +19,7 @@ output "aws_ami_ubuntu" {
 
 data "aws_ami" "centos" {
   most_recent = true
-  owners = ["137112412989"] #amazon
+  owners      = ["137112412989"] #amazon
 
   filter {
     name   = "name"
