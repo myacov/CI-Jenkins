@@ -161,7 +161,7 @@ we need:
 - Name: `jenkins`
 - SAVE `TOKEN` that was created
 
-##### In Jenkins, go to "manage jenkins" > "System" > "SonarQube" 
+##### In Jenkins, go to "manage jenkins" > "Security" > "SonarQube" 
 - Add SonarQube
     - [x] Environment Variables
     - Name: `sonarserver`
@@ -208,7 +208,7 @@ Add to the artifact names to differentiate them based on the build timestamp
     - Add Jenkins CI integration
     - SAVE `TOKEN` created
 
-##### In Jenkins, go to "manage jenkins" > "System" > "Slack"
+##### In Jenkins, go to "manage jenkins" > "Security" > "Slack"
 - Workspace: `myWorkspace###`
     - (from URL: https://`myWorkspace###`.slack.com/)
 - Add Jenkins Credential
@@ -224,3 +224,20 @@ Add to the artifact names to differentiate them based on the build timestamp
 - `https://github.com/jenkinsci/nexus-artifact-uploader-plugin`
 
  
+
+ ## CD
+ ### 1. IAM
+
+ ### 2. Post Installation addons
+1. Setup Jenkins user and install plugins:
+    * `Docker Pipeline`
+    * `CloudBees Docker Build and Publish`
+    * `Amazon ECR`
+    * `Pipeline: AWS Steps`
+
+#### go to "manage jenkins" > "Security" > "Credentials" > "Stores scoped to Jenkins"
+- Add Jenkins > `Global credentials (unrestricted)` > `+ Add Credentials`
+- Kind: `AWS Credentials`
+- ID: `awscreds`
+- Description: `awscreds`
+- Access Key ID: enter the `SECRET access key` from iam

@@ -10,9 +10,9 @@ resource "aws_instance" "sonarServer" {
 
   associate_public_ip_address = true
   key_name                    = aws_key_pair.jenkins-key.key_name
-  
+
   user_data = file(var.sonar_script_path)
-  
+
   tags = {
     Name = "${var.env_prefix}-sonarServer"
   }
