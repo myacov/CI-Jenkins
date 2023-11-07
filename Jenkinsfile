@@ -1,4 +1,4 @@
-def COLOR_MAP[
+def COLOR_MAP = [
     'SUCCESS': 'good',
     'FAILURE': 'danger',
 ]
@@ -111,7 +111,6 @@ pipeline {
         }
 
     }
-
     post {
         always {
             echo 'Slack Notifications.'
