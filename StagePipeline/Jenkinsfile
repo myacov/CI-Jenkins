@@ -136,7 +136,7 @@ pipeline {
         stage('Deploy to ECS staging') {
             steps {
                 script {
-                    sh 'aws ecs update-service --cluster ${cluster} --service ${service} --force-new-deployment'
+                    sh "aws ecs update-service -region ${AWS_REGION} --cluster ${cluster} --service ${service} --force-new-deployment"
                 }
             }
         }
