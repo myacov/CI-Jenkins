@@ -23,9 +23,8 @@ pipeline {
         SONARSCANNER = 'sonarscanner'
         AWS_REGION = 'us-east-1'
         ECR_REPOSITORY_URI = '567620372312.dkr.ecr.us-east-1.amazonaws.com/vprofileappimg'
-        // registryCredential = 'ecr:us-east-1:awscreds'
-        // appRegistry = '567620372312.dkr.ecr.us-east-1.amazonaws.com/vprofileappimg'
-        // vprofileRegistry = "https://567620372312.dkr.ecr.us-east-1.amazonaws.com"
+        cluster = "vprostaging"
+        service = "vproappstagesvc"
     }
 	
     stages{
@@ -133,6 +132,15 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to ECS staging') {
+            steps {
+                script {
+                    sh 'aws ecs update-service --cluster ${cluster} --service ${service} --force-new-deployment'
+                }
+            }
+        }
+
 
     }
     post {
