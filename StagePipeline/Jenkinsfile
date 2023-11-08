@@ -21,9 +21,11 @@ pipeline {
         NEXUS_LOGIN = 'nexuslogin'
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
-        registryCredential = 'ecr:us-east-1:awscreds'
-        appRegistry = '567620372312.dkr.ecr.us-east-1.amazonaws.com/vprofileappimg'
-        vprofileRegistry = "https://567620372312.dkr.ecr.us-east-1.amazonaws.com"
+        AWS_REGION = 'us-east-1'
+        ECR_REPOSITORY_URI = '567620372312.dkr.ecr.us-east-1.amazonaws.com/vprofileappimg'
+        // registryCredential = 'ecr:us-east-1:awscreds'
+        // appRegistry = '567620372312.dkr.ecr.us-east-1.amazonaws.com/vprofileappimg'
+        // vprofileRegistry = "https://567620372312.dkr.ecr.us-east-1.amazonaws.com"
     }
 	
     stages{
@@ -116,7 +118,8 @@ pipeline {
         stage('Build app Image'){
             steps {
                 script {
-                    dockerImage = docker.build(appRegistry +":$BUILD_NUMBER", "./Docker-files/app/multistage")
+                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY_URI}"
+                    dockerImage = docker.build(ECR_REPOSITORY_URI +":$BUILD_NUMBER", "./Docker-files/app/multistage")
                 }
             }
         }
@@ -124,10 +127,8 @@ pipeline {
         stage ('Upload app Image') {
             steps {
                 script {
-                    docker.withRegistry( vprofileRegistry,registryCredential) {
-                        dockerImage.push("$BUILD_NUMBER")
-                        dockerImage.push('latest')
-                    }
+                    dockerImage.push("$BUILD_NUMBER")
+                    dockerImage.push('latest')
                     
                 }
             }
