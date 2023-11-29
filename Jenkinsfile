@@ -11,16 +11,16 @@ pipeline {
     }
     environment {
         SNAP_REPO = 'vpro-snapshot'
-        NEXUS_USER = 'admin'
-        NEXUS_PASS = 'admin123'
+
         RELEASE_REPO = 'vprofile-release'
         CENTRAL_REPO = 'vpro-maven-central'
         NEXUSIP = '172.21.10.37'
         NEXUSPORT = '8081'
         NEXUS_GRP_REPO = 'vpro-maven-group'
-        NEXUS_LOGIN = 'nexuslogin'
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
+        // Jenkins credentials ID
+        NEXUS_LOGIN = 'nexus-credentials-id'
     }
 	
     stages{
@@ -91,20 +91,24 @@ pipeline {
         }
 
         stage("UPLOAD ARTIFACT to Nexus Repository") {
-            steps{
-                nexusArtifactUploader(
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
-                    groupId: 'QA',
-                    version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
-                    repository: "${RELEASE_REPO}",
-                    credentialsId: "${NEXUS_LOGIN}",
-                    artifacts: [
-                        [artifactId: 'vproapp',
-                        classifier: '',
-                        file: 'target/vprofile-v2.war',
-                        type: 'war']
+            steps {
+                script {
+                    // Retrieve credentials
+                    def nexusCreds = withCredentials([usernamePassword(credentialsId: NEXUS_LOGIN, usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                        // Use the credentials
+                        nexusArtifactUploader(
+                            nexusVersion: 'nexus3',
+                            protocol: 'http',
+                            nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
+                            groupId: 'QA',
+                            version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+                            repository: "${RELEASE_REPO}",
+                            credentialsId: NEXUS_LOGIN,
+                            artifacts: [
+                                [artifactId: 'vproapp',
+                                classifier: '',
+                                file: 'target/vprofile-v2.war',
+                                type: 'war']
                     ]
                 )
             } 		    
